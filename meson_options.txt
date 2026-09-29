@@ -27,8 +27,8 @@ option('engine', type: 'combo', choices: ['jit'], value: 'jit')
 option('jit_cpu_family', type: 'string', value: '')
 option('guest_archs', type: 'array',
        choices: ['i386', 'amd64', 'arm64', 'riscv64'],
-       value: ['i386', 'amd64', 'arm64', 'riscv64'],
-       description: 'Guest architectures this build can execute (at least one required)')
+       value: ['arm64'],
+       description: 'Guest architectures this build can execute (iSH-X defaults to ARM64 only)')
 
 option('arm64_gret', type: 'combo', choices: ['ldar', 'dmb'], value: 'dmb',
        description: 'Gadget dispatch for the fully-translated guests (arm64, riscv64): dmb (ldr + dmb ishld, 1.7x faster on ARMv8.0, the default) or ldar (load-acquire, ~6% faster on Apple Silicon only)')
