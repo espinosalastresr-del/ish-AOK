@@ -5,30 +5,31 @@ These checks intentionally do not claim device/runtime validation. They make
 the source-level contract fail closed if a command, permission framework, or
 guest-file transfer seam is accidentally removed.
 """
+import re
 from pathlib import Path
 
 bridge = Path("app/ISHXNativeBridge.m").read_text(encoding="utf-8")
 glue = Path("kernel/iosctl_glue.c").read_text(encoding="utf-8")
 plist = Path("app/Info.plist").read_text(encoding="utf-8")
 
-commands = [
-    ('status', 'isEqualToString:@"status"'),
-    ('location', 'location"&&argc>2&&strcmp(argv[2],"get")'),
-    ('motion', 'motion"&&argc>2&&strcmp(argv[2],"accelerometer")'),
-    ('clipboard', 'isEqualToString:@"clipboard"'),
-    ('battery', 'battery"&&argc>2&&strcmp(argv[2],"get")'),
-    ('notifications', 'notifications"&&argc>2&&strcmp(argv[2],"status")'),
-    ('contacts', 'contacts"&&argc>2&&strcmp(argv[2],"list")'),
-    ('calendar', 'calendar"&&argc>2&&strcmp(argv[2],"list")'),
-    ('reminders', 'reminders"&&argc>2&&strcmp(argv[2],"list")'),
-    ('bluetooth', 'bluetooth"&&argc>2&&strcmp(argv[2],"scan")'),
-    ('camera', 'camera"&&argc>2&&strcmp(argv[2],"photo")'),
-    ('microphone', 'microphone"&&argc>2&&strcmp(argv[2],"record")'),
-    ('photos', 'photos"&&argc>2&&strcmp(argv[2],"save")'),
-]
+commands = {
+    "status": r'isEqualToString:@"status"',
+    "location": r'isEqualToString:@"location"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
+    "motion": r'isEqualToString:@"motion"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"accelerometer"\)\s*==\s*0',
+    "clipboard": r'isEqualToString:@"clipboard"',
+    "battery": r'isEqualToString:@"battery"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
+    "notifications": r'isEqualToString:@"notifications"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"status"\)\s*==\s*0',
+    "contacts": r'isEqualToString:@"contacts"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "calendar": r'isEqualToString:@"calendar"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "reminders": r'isEqualToString:@"reminders"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "bluetooth": r'isEqualToString:@"bluetooth"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"scan"\)\s*==\s*0',
+    "camera": r'isEqualToString:@"camera"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"photo"\)\s*==\s*0',
+    "microphone": r'isEqualToString:@"microphone"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"record"\)\s*==\s*0',
+    "photos": r'isEqualToString:@"photos"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"save"\)\s*==\s*0',
+}
 
-for name, marker in commands:
-    assert marker in bridge, f"missing iosctl bridge contract: {name}"
+for name, pattern in commands.items():
+    assert re.search(pattern, bridge), f"missing iosctl bridge contract: {name}"
 
 for header in (
     "<AVFoundation/AVFoundation.h>",
@@ -52,9 +53,9 @@ for marker in (
     assert marker in bridge, f"missing guest file bridge seam: {marker}"
 
 for marker in (
-    'native_iosctl_main',
-    'ishx_native_bridge_run',
-    'native_write(1, out, strlen(out))',
+    "native_iosctl_main",
+    "ishx_native_bridge_run",
+    "native_write(1, out, strlen(out))",
 ):
     assert marker in glue, f"missing iosctl guest/native seam: {marker}"
 
