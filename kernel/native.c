@@ -334,6 +334,8 @@ int native_bmm_main(int argc, char *const argv[], char *const envp[]);
 // start-wayland.sh runs it when the compositor draws on the GPU.
 int native_wlpresent_main(int argc, char *const argv[], char *const envp[]);
 int native_bmt_main(int argc, char *const argv[], char *const envp[]);
+// iSH-X public iOS capability bridge, exposed to the guest as iosctl.
+int native_iosctl_main(int argc, char *const argv[], char *const envp[]);
 
 // ktop (kernel/ktop_glue.c), compiled from the same opt/AOK/tools/ktop/ktop.c
 // that ships to the guest -- so /AOK/native/ktop and a ktop built from
@@ -360,6 +362,7 @@ static const struct native_program native_programs[] = {
     // is, and what it is not.
     { "bmm", native_bmm_main },
     { "bmt", native_bmt_main },
+    { "iosctl", native_iosctl_main },
 #ifdef ISH_NATIVE_RUST
     // Rust, reached by rewriting its libc imports onto the shim rather than by
     // the #define redirection that only covers what AOK compiles. See
