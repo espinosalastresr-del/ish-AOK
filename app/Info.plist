@@ -73,8 +73,12 @@
 	<string>Programs running in iSH-X may scan Bluetooth devices when iosctl requests it.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Programs running in iSH-X may access contacts when iosctl requests them.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Programs running in iSH-X may access calendars when iosctl requests them.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Programs running in iSH-X may access calendars when iosctl requests them.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Programs running in iSH-X may access reminders when iosctl requests them.</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Programs running in iSH-X may access reminders when iosctl requests them.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
