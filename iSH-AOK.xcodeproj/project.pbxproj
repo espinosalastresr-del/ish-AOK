@@ -234,12 +234,6 @@
 		BBD23D77258DA4BC003DCB40 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD23D76258DA4BC003DCB40 /* SnapshotHelper.swift */; };
 		BBECF3BC26913F1600DEC937 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB792B541F96D90D00FFB7A4 /* AppDelegate.m */; };
 D10000000000000100000001 /* ISHXNativeBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000100000002 /* ISHXNativeBridge.m */; };
-D10000000000000100000004 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000A /* Contacts.framework */; };
-D10000000000000100000005 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000B /* CoreBluetooth.framework */; };
-D10000000000000100000006 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000C /* CoreMotion.framework */; };
-D10000000000000100000007 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000D /* EventKit.framework */; };
-D10000000000000100000008 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000E /* Photos.framework */; };
-D10000000000000100000009 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000F /* UserNotifications.framework */; };
 		BBFB2C7E259026C200545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; };
 		BBFB2CEC2590296B00545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; platformFilter = ios; };
 		BBFB55662158644C00DFE6DE /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB55652158644C00DFE6DE /* libresolv.tbd */; };
