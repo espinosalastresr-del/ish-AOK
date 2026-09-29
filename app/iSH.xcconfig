@@ -24,7 +24,7 @@ ISH_LOGGER_macosx = dprintf
 // submodule. Missing either is a hard build error naming the fix, not a quiet
 // skip: an editor that silently vanished from a build would be found by users,
 // not by us. Clear this to build without it.
-AOK_NATIVE_HELIX = YES
+AOK_NATIVE_HELIX = NO
 // AOK_NATIVE_HELIX = 
 
 // bash as a native program (/AOK/native/bash). NOT shipped: bash and its
@@ -50,6 +50,6 @@ AOK_RUST_FEATURES =
 
 // Guest architectures the emulator supports (comma-separated; at least one).
 // Default is everything. Trim to e.g. "arm64" for a smaller/faster build.
-ISH_GUEST_ARCHS = i386,amd64,arm64,riscv64
+ISH_GUEST_ARCHS = arm64
 
 ROOTFS_URL = github.com/ish-app/roots/releases/download/g5739cf3df9f8bd3acb82b59c2397cb3daead19c4/appstore-apk.tar.gz
