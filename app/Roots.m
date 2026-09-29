@@ -272,42 +272,12 @@ static NSArray<NSDictionary<NSString *, NSString *> *> *gRootChoices;
 static NSArray<NSDictionary<NSString *, NSString *> *> *gOfferedRootChoices;
 
 static NSArray<NSDictionary<NSString *, NSString *> *> *BuildRootChoices(void) {
-    NSMutableArray<NSDictionary<NSString *, NSString *> *> *mutableChoices = [@[
-            // Bundled-in-the-app choices (arm64 guests -- the only architecture
-            // still shipped in the IPA); every download-backed choice comes from
-            // the rootfs-manifest submodule instead (loaded below).
-            // RootsTableViewController groups these by kBundledRootFamilyKey
-            // (one row per distro, architecture picked as a sub-choice) and
-            // splits into "Official Distributions" / "Community Distributions"
-            // table sections along kBundledRootTierKey.
-            @{
-                kBundledRootIdentifierKey: @"alpine3233arm64",
-                kBundledRootDisplayNameKey: @"Alpine3.23.3(arm64)",
-                kBundledRootArchiveNameKey: @"alpine-minirootfs-3.23.3-aarch64",
-                // Native AArch64 guest (same-architecture dispatch on Apple
-                // silicon — see aarch64_guest_plan.md). Import name follows
-                // the RootNameIsValid rules like the x86_64 entry above.
-                kBundledRootImportNameKey: @"Alpine3.23.3-arm64",
-                kBundledRootInitialWindowKey: @"session-shell",
-                kBundledRootGuestABIKey: @"arm64",
-                kBundledRootFamilyKey: @"alpine3233",
-                kBundledRootFamilyDisplayNameKey: @"Alpine 3.23.3",
-                kBundledRootTierKey: kBundledRootTierOfficial,
-            },
-            @{
-                kBundledRootIdentifierKey: @"devuan6arm64",
-                kBundledRootDisplayNameKey: @"Devuan 6 (excalibur, arm64)",
-                kBundledRootArchiveNameKey: @"devuan-minirootfs-6.0-aarch64",
-                kBundledRootImportNameKey: @"Devuan6-arm64",
-                kBundledRootInitialWindowKey: @"session-shell",
-                kBundledRootGuestABIKey: @"arm64",
-                kBundledRootFamilyKey: @"devuan6",
-                kBundledRootFamilyDisplayNameKey: @"Devuan 6 (excalibur)",
-                kBundledRootTierKey: kBundledRootTierOfficial,
-            },
-        ] mutableCopy];
-    [mutableChoices addObjectsFromArray:DownloadableRootChoices()];
-    return mutableChoices;
+    /*
+     * iSH-X never embeds a root filesystem in the IPA. ARM64 rootfs choices
+     * come from the signed-in-source manifest and are downloaded into
+     * /AOK/persist/roots only when the user selects one.
+     */
+    return DownloadableRootChoices();
 }
 
 // Recomputes both cached arrays from whatever catalogue is current. Returns YES
