@@ -2031,7 +2031,7 @@ BB9C7B84240A240E00F5D4F0 /* AppGroup.m */ = {isa = PBXFileReference; lastKnownFi
 			shellPath = /bin/sh;
 			shellScript = "exit 0";
 			showEnvVarsInLog = 0;
-		};;
+		};
 		BBFB2C572590257E00545EAB /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
