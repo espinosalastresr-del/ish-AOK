@@ -14,12 +14,32 @@
 #include <string.h>
 
 static void ishx_json(char *out, size_t cap, BOOL ok, NSString *payload) {
-    NSDictionary *obj = ok ? @{@"ok": @YES, @"result": payload ?: @""}
+    if (out == NULL || cap < 3) return;
+
+    id value = payload ?: @"";
+    if (ok && payload.length > 0) {
+        NSData *candidate = [payload dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *parseError = nil;
+        id parsed = candidate ? [NSJSONSerialization JSONObjectWithData:candidate options:0 error:&parseError] : nil;
+        if (parseError == nil && parsed != nil)
+            value = parsed;
+    }
+
+    NSDictionary *obj = ok ? @{@"ok": @YES, @"result": value}
                            : @{@"ok": @NO, @"error": payload ?: @"unknown"};
     NSData *data = [NSJSONSerialization dataWithJSONObject:obj options:0 error:nil];
-    if (!data || cap < 3) return;
-    size_t n = MIN(cap - 2, data.length);
-    memcpy(out, data.bytes, n); out[n] = '\n'; out[n + 1] = '\0';
+    if (!data) return;
+
+    // Never truncate a JSON response: a partial document is worse than an
+    // explicit failure, especially for contacts/calendar results.
+    if (data.length + 2 > cap) {
+        NSDictionary *overflow = @{@"ok": @NO, @"error": @"iosctl response too large"};
+        data = [NSJSONSerialization dataWithJSONObject:overflow options:0 error:nil];
+        if (!data || data.length + 2 > cap) return;
+    }
+    memcpy(out, data.bytes, data.length);
+    out[data.length] = '\n';
+    out[data.length + 1] = '\0';
 }
 static BOOL ishx_wait(dispatch_semaphore_t sem, NSTimeInterval seconds) {
     return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW,
