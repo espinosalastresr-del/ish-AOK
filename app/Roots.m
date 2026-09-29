@@ -243,13 +243,21 @@ static NSURL *RemoteManifestCacheURL(void) {
 // the same parser, and a source that fails to parse falls through to the next
 // rather than emptying the picker.
 static NSArray<NSDictionary<NSString *, NSString *> *> *DownloadableRootChoices(void) {
+    // iSH-X is an ARM64-only product. Keep the remote catalogue useful for
+    // other forks, but never offer a rootfs whose guest ABI cannot execute here.
+    NSArray *(^arm64Only)(NSArray *) = ^NSArray *(NSArray *entries) {
+        NSPredicate *p = [NSPredicate predicateWithBlock:^BOOL(NSDictionary *entry, NSDictionary *bindings) {
+            return [entry[kBundledRootGuestABIKey] isEqualToString:@"arm64"];
+        }];
+        return [entries filteredArrayUsingPredicate:p];
+    };
     NSURL *cacheURL = RemoteManifestCacheURL();
     if (cacheURL != nil) {
         NSData *cached = [NSData dataWithContentsOfURL:cacheURL];
         if (cached != nil) {
             NSArray *entries = ParseRootManifest(cached, @"downloaded");
             if (entries != nil)
-                return entries;
+                return arm64Only(entries);
             // Corrupt or truncated: drop it so the next fetch starts clean,
             // and use the in-app copy meanwhile.
             [NSFileManager.defaultManager removeItemAtURL:cacheURL error:NULL];
@@ -260,7 +268,7 @@ static NSArray<NSDictionary<NSString *, NSString *> *> *DownloadableRootChoices(
         NSLog(@"manifest.json not found in app bundle (deps/rootfs-manifest submodule) -- no downloadable filesystem choices available");
         return @[];
     }
-    return ParseRootManifest([NSData dataWithContentsOfURL:bundledURL], @"in-app") ?: @[];
+    return arm64Only(ParseRootManifest([NSData dataWithContentsOfURL:bundledURL], @"in-app") ?: @[]);
 }
 
 // Rebuilt whenever a fetch lands, so it cannot be a dispatch_once. Read from
