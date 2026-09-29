@@ -25,6 +25,10 @@ static BOOL ishx_wait(dispatch_semaphore_t sem, NSTimeInterval seconds) {
     return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW,
         (int64_t)(seconds * NSEC_PER_SEC))) == 0;
 }
+static void ishx_main_sync(void (^block)(void)) {
+    if ([NSThread isMainThread]) block();
+    else dispatch_sync(dispatch_get_main_queue(), block);
+}
 @interface ISHXLocationDelegate : NSObject <CLLocationManagerDelegate>
 @property(nonatomic) dispatch_semaphore_t sem;
 @property(nonatomic,strong) CLLocation *location;
@@ -73,8 +77,9 @@ static NSString *ishx_join(int argc,char *const argv[],int first) {
 static int ishx_location(char *out,size_t cap) {
     if(!CLLocationManager.locationServicesEnabled){ishx_json(out,cap,NO,@"location services disabled");return 1;}
     CLLocationManager *m=[CLLocationManager new]; ISHXLocationDelegate *d=[ISHXLocationDelegate new];
-    d.sem=dispatch_semaphore_create(0); m.delegate=d; [m requestWhenInUseAuthorization]; [m startUpdatingLocation];
-    BOOL got=ishx_wait(d.sem,15); [m stopUpdatingLocation];
+    d.sem=dispatch_semaphore_create(0);
+    ishx_main_sync(^{ m.delegate=d; [m requestWhenInUseAuthorization]; [m startUpdatingLocation]; });
+    BOOL got=ishx_wait(d.sem,15); ishx_main_sync(^{ [m stopUpdatingLocation]; });
     if(!got||!d.location){ishx_json(out,cap,NO,d.error.localizedDescription ?: @"location timeout");return 1;}
     CLLocation *l=d.location;
     NSString *r=[NSString stringWithFormat:@"{\"latitude\":%.8f,\"longitude\":%.8f,\"altitude\":%.2f,\"accuracy\":%.2f}",
@@ -91,8 +96,14 @@ static int ishx_motion(char *out,size_t cap) {
     ishx_json(out,cap,YES,r);return 0;
 }
 static int ishx_clipboard(int argc,char *const argv[],char *out,size_t cap) {
-    if(argc>2&&strcmp(argv[2],"set")==0){UIPasteboard.generalPasteboard.string=ishx_join(argc,argv,3);ishx_json(out,cap,YES,@"set");return 0;}
-    ishx_json(out,cap,YES,UIPasteboard.generalPasteboard.string ?: @"");return 0;
+    __block NSString *value = nil;
+    if(argc>2&&strcmp(argv[2],"set")==0){
+        NSString *input=ishx_join(argc,argv,3);
+        ishx_main_sync(^{ UIPasteboard.generalPasteboard.string=input; });
+        ishx_json(out,cap,YES,@"set");return 0;
+    }
+    ishx_main_sync(^{ value=UIPasteboard.generalPasteboard.string ?: @""; });
+    ishx_json(out,cap,YES,value);return 0;
 }
 static int ishx_battery(char *out,size_t cap) {
     UIDevice.currentDevice.batteryMonitoringEnabled=YES;
