@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Static contract checks for the iSH-X iosctl public bridge.
-
-These checks intentionally do not claim device/runtime validation. They make
-the source-level contract fail closed if a command, permission framework, or
-guest-file transfer seam is accidentally removed.
-"""
+"""Static contract checks for the iSH-X iosctl public bridge."""
 import re
 from pathlib import Path
 
@@ -14,18 +9,18 @@ plist = Path("app/Info.plist").read_text(encoding="utf-8")
 
 commands = {
     "status": r'isEqualToString:@"status"',
-    "location": r'isEqualToString:@"location"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
-    "motion": r'isEqualToString:@"motion"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"accelerometer"\)\s*==\s*0',
+    "location": r'isEqualToString:@"location"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
+    "motion": r'isEqualToString:@"motion"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"accelerometer"\)\s*==\s*0',
     "clipboard": r'isEqualToString:@"clipboard"',
-    "battery": r'isEqualToString:@"battery"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
-    "notifications": r'isEqualToString:@"notifications"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"status"\)\s*==\s*0',
-    "contacts": r'isEqualToString:@"contacts"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
-    "calendar": r'isEqualToString:@"calendar"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
-    "reminders": r'isEqualToString:@"reminders"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
-    "bluetooth": r'isEqualToString:@"bluetooth"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"scan"\)\s*==\s*0',
-    "camera": r'isEqualToString:@"camera"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"photo"\)\s*==\s*0',
-    "microphone": r'isEqualToString:@"microphone"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"record"\)\s*==\s*0',
-    "photos": r'isEqualToString:@"photos"\s*\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"save"\)\s*==\s*0',
+    "battery": r'isEqualToString:@"battery"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
+    "notifications": r'isEqualToString:@"notifications"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"status"\)\s*==\s*0',
+    "contacts": r'isEqualToString:@"contacts"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "calendar": r'isEqualToString:@"calendar"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "reminders": r'isEqualToString:@"reminders"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "bluetooth": r'isEqualToString:@"bluetooth"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"scan"\)\s*==\s*0',
+    "camera": r'isEqualToString:@"camera"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"photo"\)\s*==\s*0',
+    "microphone": r'isEqualToString:@"microphone"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"record"\)\s*==\s*0',
+    "photos": r'isEqualToString:@"photos"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"save"\)\s*==\s*0',
 }
 
 for name, pattern in commands.items():
