@@ -12,19 +12,19 @@ glue = Path("kernel/iosctl_glue.c").read_text(encoding="utf-8")
 plist = Path("app/Info.plist").read_text(encoding="utf-8")
 
 commands = [
-    ('status', 'iosctl status'),
-    ('location', 'location get'),
-    ('motion', 'motion accelerometer'),
-    ('clipboard', 'clipboard'),
-    ('battery', 'battery get'),
-    ('notifications', 'notifications status'),
-    ('contacts', 'contacts list'),
-    ('calendar', 'calendar list'),
-    ('reminders', 'reminders list'),
-    ('bluetooth', 'bluetooth scan'),
-    ('camera', 'camera photo'),
-    ('microphone', 'microphone record'),
-    ('photos', 'photos save'),
+    ('status', 'isEqualToString:@"status"'),
+    ('location', 'location"&&argc>2&&strcmp(argv[2],"get")'),
+    ('motion', 'motion"&&argc>2&&strcmp(argv[2],"accelerometer")'),
+    ('clipboard', 'isEqualToString:@"clipboard"'),
+    ('battery', 'battery"&&argc>2&&strcmp(argv[2],"get")'),
+    ('notifications', 'notifications"&&argc>2&&strcmp(argv[2],"status")'),
+    ('contacts', 'contacts"&&argc>2&&strcmp(argv[2],"list")'),
+    ('calendar', 'calendar"&&argc>2&&strcmp(argv[2],"list")'),
+    ('reminders', 'reminders"&&argc>2&&strcmp(argv[2],"list")'),
+    ('bluetooth', 'bluetooth"&&argc>2&&strcmp(argv[2],"scan")'),
+    ('camera', 'camera"&&argc>2&&strcmp(argv[2],"photo")'),
+    ('microphone', 'microphone"&&argc>2&&strcmp(argv[2],"record")'),
+    ('photos', 'photos"&&argc>2&&strcmp(argv[2],"save")'),
 ]
 
 for name, marker in commands:
