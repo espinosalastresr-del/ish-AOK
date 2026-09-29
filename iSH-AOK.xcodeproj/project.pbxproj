@@ -233,10 +233,23 @@
 		BBD23D5F258DA450003DCB40 /* Screenshots.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD23D5E258DA450003DCB40 /* Screenshots.m */; };
 		BBD23D77258DA4BC003DCB40 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD23D76258DA4BC003DCB40 /* SnapshotHelper.swift */; };
 		BBECF3BC26913F1600DEC937 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB792B541F96D90D00FFB7A4 /* AppDelegate.m */; };
+D10000000000000100000001 /* ISHXNativeBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000100000002 /* ISHXNativeBridge.m */; };
+D10000000000000100000004 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000A /* Contacts.framework */; };
+D10000000000000100000005 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000B /* CoreBluetooth.framework */; };
+D10000000000000100000006 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000C /* CoreMotion.framework */; };
+D10000000000000100000007 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000D /* EventKit.framework */; };
+D10000000000000100000008 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000E /* Photos.framework */; };
+D10000000000000100000009 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000F /* UserNotifications.framework */; };
 		BBFB2C7E259026C200545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; };
 		BBFB2CEC2590296B00545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; platformFilter = ios; };
 		BBFB55662158644C00DFE6DE /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB55652158644C00DFE6DE /* libresolv.tbd */; };
 		BE6DA95A2C0D243E00A7A001 /* MetricKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE6DA9592C0D243E00A7A001 /* MetricKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		D10000000000000100000004 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000A /* Contacts.framework */; };
+		D10000000000000100000005 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000B /* CoreBluetooth.framework */; };
+		D10000000000000100000006 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000C /* CoreMotion.framework */; };
+		D10000000000000100000007 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000D /* EventKit.framework */; };
+		D10000000000000100000008 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000E /* Photos.framework */; };
+		D10000000000000100000009 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1000000000000010000000F /* UserNotifications.framework */; };
 		C0A000012E00000100000001 /* AudioDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = C0A000012E00000100000005 /* AudioDevice.m */; };
 		C0A000012E00000100000002 /* AudioOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = C0A000012E00000100000007 /* AudioOutput.m */; };
 		C0A000012E00000100000003 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0A000012E00000100000009 /* AudioToolbox.framework */; };
@@ -721,7 +734,9 @@
 		BB88F49B2154760800A341FD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB88F49C2154760800A341FD /* iSHFileProvider.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iSHFileProvider.entitlements; sourceTree = "<group>"; };
 		BB88F4A4215476BA00A341FD /* iSH.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iSH.entitlements; sourceTree = "<group>"; };
-		BB9C7B84240A240E00F5D4F0 /* AppGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppGroup.m; sourceTree = "<group>"; };
+		D10000000000000100000003 /* ISHXNativeBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ISHXNativeBridge.h; sourceTree = "<group>"; };
+D10000000000000100000002 /* ISHXNativeBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.file.objc; path = ISHXNativeBridge.m; sourceTree = "<group>"; };
+BB9C7B84240A240E00F5D4F0 /* AppGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppGroup.m; sourceTree = "<group>"; };
 		BB9C7B86240A29DE00F5D4F0 /* AppGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppGroup.h; sourceTree = "<group>"; };
 		BB9C7B88240A343400F5D4F0 /* iSH.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = iSH.xcconfig; path = app/iSH.xcconfig; sourceTree = "<group>"; };
 		BBA110ED2A1B2C3D4E5F0001 /* liblzma.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = liblzma.xcframework; path = "deps/liblzma-static/liblzma.xcframework"; sourceTree = SOURCE_ROOT; };
@@ -760,6 +775,12 @@
 		BBFB557E21587B6800DFE6DE /* ArrowBarButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArrowBarButton.h; sourceTree = "<group>"; };
 		BBFB557F21587B6800DFE6DE /* ArrowBarButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ArrowBarButton.m; sourceTree = "<group>"; };
 		BE6DA9592C0D243E00A7A001 /* MetricKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetricKit.framework; path = System/Library/Frameworks/MetricKit.framework; sourceTree = SDKROOT; };
+		D1000000000000010000000A /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
+		D1000000000000010000000B /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		D1000000000000010000000C /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		D1000000000000010000000D /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		D1000000000000010000000E /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		D1000000000000010000000F /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		C0A000012E00000100000005 /* AudioDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDevice.m; sourceTree = "<group>"; };
 		C0A000012E00000100000006 /* AudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDevice.h; sourceTree = "<group>"; };
 		C0A000012E00000100000007 /* AudioOutput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioOutput.m; sourceTree = "<group>"; };
@@ -1107,6 +1128,8 @@
 				5D9897CF28B6B953003D3670 /* ViewController.h */,
 				BB792B531F96D90D00FFB7A4 /* AppDelegate.h */,
 				BB792B541F96D90D00FFB7A4 /* AppDelegate.m */,
+				D10000000000000100000003 /* ISHXNativeBridge.h */,
+				D10000000000000100000002 /* ISHXNativeBridge.m */,
 				BB565EA52734F22D00C93EAE /* CurrentRoot.h */,
 				BB565EA32734F1FB00C93EAE /* CurrentRoot.m */,
 				BBCC9D942365430800424C83 /* SceneDelegate.h */,
@@ -1187,6 +1210,12 @@
 		BB792B7D1F96E32B00FFB7A4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D1000000000000010000000A /* Contacts.framework */,
+				D1000000000000010000000B /* CoreBluetooth.framework */,
+				D1000000000000010000000C /* CoreMotion.framework */,
+				D1000000000000010000000D /* EventKit.framework */,
+				D1000000000000010000000E /* Photos.framework */,
+				D1000000000000010000000F /* UserNotifications.framework */,
 				BB28C755268956C900BDC834 /* Foundation.framework */,
 				C0A000012E00000100000009 /* AudioToolbox.framework */,
 				BBAEE338249B58E80069EBB5 /* libbz2.tbd */,
@@ -1796,6 +1825,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D10000000000000100000004 /* Contacts.framework in Frameworks */,
+				D10000000000000100000005 /* CoreBluetooth.framework in Frameworks */,
+				D10000000000000100000006 /* CoreMotion.framework in Frameworks */,
+				D10000000000000100000007 /* EventKit.framework in Frameworks */,
+				D10000000000000100000008 /* Photos.framework in Frameworks */,
+				D10000000000000100000009 /* UserNotifications.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2235,6 +2270,7 @@
 				BB28C7A326896B1F00BDC834 /* BarButton.m in Sources */,
 				BB28C7A426896B1F00BDC834 /* AppGroup.m in Sources */,
 				BBECF3BC26913F1600DEC937 /* AppDelegate.m in Sources */,
+				D10000000000000100000001 /* ISHXNativeBridge.m in Sources */,
 				BB28C7A526896B1F00BDC834 /* UIApplication+OpenURL.m in Sources */,
 				497A08C12963401100B323CF /* AccessibilityFixes.m in Sources */,
 				BB28C7A626896B1F00BDC834 /* AboutViewController.m in Sources */,
