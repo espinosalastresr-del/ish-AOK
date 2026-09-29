@@ -6,8 +6,8 @@ on:
     branches: [working, ish-x]
   workflow_dispatch:
 concurrency:
-  group: ish-x-${{ github.ref }}
-  cancel-in-progress: true
+  group: ish-x-${{ github.sha }}
+  cancel-in-progress: false
 jobs:
   linux-static:
     runs-on: ubuntu-24.04
