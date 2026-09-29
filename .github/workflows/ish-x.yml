@@ -52,7 +52,8 @@ jobs:
           xcodebuild -version
       - name: Install Meson
         run: |
-          brew install ninja
+          brew install ninja llvm
+          echo "$(brew --prefix llvm)/bin" >> "$GITHUB_PATH"
           pip3 install --break-system-packages meson
       - name: Configure dash
         run: cd deps/dash && ../../tools/configure-dash.sh --quiet
