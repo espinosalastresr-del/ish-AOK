@@ -591,6 +591,7 @@ src = [
     'kernel/native.c',
     'kernel/iosctl_glue.c',
     'kernel/native_bench.c',
+    'jit/ishx_jit_coordinator.c',
     'kernel/native_io.c',
     'kernel/native_libc.c',
     'kernel/sha_crypt.c',
