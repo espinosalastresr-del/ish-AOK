@@ -1,0 +1,68 @@
+name: iSH-X ARM64
+on:
+  push:
+    branches: [ish-x]
+  pull_request:
+    branches: [working, ish-x]
+  workflow_dispatch:
+concurrency:
+  group: ish-x-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  linux-static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang libarchive-dev libsqlite3-dev
+          pip3 install meson ninja
+      - name: Configure dash
+        run: cd deps/dash && ../../tools/configure-dash.sh --quiet
+      - name: Configure iSH-X
+        run: meson setup build-ishx -Dengine=jit -Dguest_archs=arm64 -Dnative_bash=disabled -Dnative_helix=disabled
+      - name: Build
+        run: ninja -C build-ishx
+      - name: Unit tests
+        run: meson test -C build-ishx float80 --print-errorlogs
+      - name: Verify ARM64 source gates
+        run: |
+          grep -q "ISH_GUEST_ARM64" meson.build
+          grep -q "ISH_JIT_ARM64_GUEST" meson.build
+          test -f jit/ishx_jit_coordinator.c
+          test -f kernel/iosctl_glue.c
+  ios-native:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Select Xcode
+        run: |
+          LATEST_XCODE=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          sudo xcode-select -s "$LATEST_XCODE"
+          xcodebuild -version
+      - name: Install Meson
+        run: |
+          brew install ninja
+          pip3 install --break-system-packages meson
+      - name: Configure dash
+        run: cd deps/dash && ../../tools/configure-dash.sh --quiet
+      - name: Build ARM64 app
+        run: |
+          xcodebuild build \
+            -project iSH-AOK.xcodeproj \
+            -scheme iSH-AOK \
+            -configuration Release \
+            -arch arm64 -sdk iphoneos \
+            -derivedDataPath build-ishx-ios \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            ISH_GUEST_ARCHS=arm64
