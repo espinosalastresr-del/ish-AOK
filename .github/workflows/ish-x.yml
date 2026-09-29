@@ -34,7 +34,7 @@ jobs:
         run: meson test -C build-ishx float80 --print-errorlogs
       - name: Verify ARM64 source gates
         run: |
-          grep -q "ISH_GUEST_ARM64" meson.build
+          grep -q "guest_archs.contains('arm64')" meson.build
           grep -q "ISH_JIT_ARM64_GUEST" meson.build
           test -f jit/ishx_jit_coordinator.c
           test -f kernel/iosctl_glue.c
