@@ -380,6 +380,12 @@ D10000000000000100000001 /* ISHXNativeBridge.m in Sources */ = {isa = PBXBuildFi
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
+				D10000000000000100000004 /* Contacts.framework in Frameworks */,
+				D10000000000000100000005 /* CoreBluetooth.framework in Frameworks */,
+				D10000000000000100000006 /* CoreMotion.framework in Frameworks */,
+				D10000000000000100000007 /* EventKit.framework in Frameworks */,
+				D10000000000000100000008 /* Photos.framework in Frameworks */,
+				D10000000000000100000009 /* UserNotifications.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -1819,12 +1825,6 @@ BB9C7B84240A240E00F5D4F0 /* AppGroup.m */ = {isa = PBXFileReference; lastKnownFi
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D10000000000000100000004 /* Contacts.framework in Frameworks */,
-				D10000000000000100000005 /* CoreBluetooth.framework in Frameworks */,
-				D10000000000000100000006 /* CoreMotion.framework in Frameworks */,
-				D10000000000000100000007 /* EventKit.framework in Frameworks */,
-				D10000000000000100000008 /* Photos.framework in Frameworks */,
-				D10000000000000100000009 /* UserNotifications.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
