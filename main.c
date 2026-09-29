@@ -1,3 +1,4 @@
+#include "jit/ishx_jit_coordinator.h"
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -646,6 +647,7 @@ int main(int argc, char *const argv[]) {
     // as an unmatched release.
     lockstats_init();
     guestprof_init();
+    ishx_jit_coordinator_init();
     run_at_boot();
     configure_standalone_i386_safety(argc, argv);
     configure_standalone_amd64_jit();
