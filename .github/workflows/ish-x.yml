@@ -24,6 +24,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y clang libarchive-dev libsqlite3-dev
           pip3 install meson ninja
+      - name: Install Rust iOS target
+        run: |
+          rustup target add aarch64-apple-ios
+          rustup target list --installed | grep -qx 'aarch64-apple-ios (installed)'
       - name: Configure dash
         run: cd deps/dash && ../../tools/configure-dash.sh --quiet
       - name: Configure iSH-X
