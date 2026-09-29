@@ -38,6 +38,8 @@ jobs:
           grep -q "ISH_JIT_ARM64_GUEST" meson.build
           test -f jit/ishx_jit_coordinator.c
           test -f kernel/iosctl_glue.c
+      - name: Verify iosctl bridge contract
+        run: python3 tests/unit/iosctl_contract.py
   ios-native:
     runs-on: macos-15
     timeout-minutes: 60
