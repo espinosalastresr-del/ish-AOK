@@ -120,7 +120,7 @@ static int ishx_contacts(char *out,size_t cap) {
     [s requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL g,NSError *e){ok=g;err=e;dispatch_semaphore_signal(sem);}];
     if(!ishx_wait(sem,10)||!ok){ishx_json(out,cap,NO,err.localizedDescription ?: @"contacts permission denied");return 1;}
     NSArray *keys=@[CNContactGivenNameKey,CNContactFamilyNameKey,CNContactPhoneNumbersKey,CNContactEmailAddressesKey];
-    CNFetchRequest *q=[[CNFetchRequest alloc]initWithKeysToFetch:keys];NSMutableArray *a=[NSMutableArray array];NSError *e=nil;
+    CNContactFetchRequest *q=[[CNContactFetchRequest alloc]initWithKeysToFetch:keys];NSMutableArray *a=[NSMutableArray array];NSError *e=nil;
     [s enumerateContactsWithFetchRequest:q error:&e usingBlock:^(CNContact *c,BOOL *stop){
         NSMutableDictionary *x=[@{@"given":c.givenName ?: @"",@"family":c.familyName ?: @""} mutableCopy];
         if(c.phoneNumbers.count)x[@"phone"]=c.phoneNumbers.firstObject.value.stringValue ?: @"";
@@ -131,16 +131,31 @@ static int ishx_contacts(char *out,size_t cap) {
     ishx_json(out,cap,YES,[[NSString alloc]initWithData:d encoding:NSUTF8StringEncoding] ?: @"[]");return 0;
 }
 static int ishx_eventkit(char *out,size_t cap,BOOL reminders) {
-    EKEventStore *s=[EKEventStore new];dispatch_semaphore_t sem=dispatch_semaphore_create(0);__block BOOL ok=NO;__block NSError *err;
+    EKEventStore *s=[EKEventStore new];
+    dispatch_semaphore_t sem=dispatch_semaphore_create(0);
+    __block BOOL ok=NO; __block NSError *err;
     if (@available(iOS 17.0, *)) {
-        [s requestFullAccessToEventsWithCompletion:^(BOOL g,NSError *e){ok=g;err=e;dispatch_semaphore_signal(sem);}];
+        if (reminders) {
+            [s requestFullAccessToRemindersWithCompletion:^(BOOL g,NSError *e){
+                ok=g; err=e; dispatch_semaphore_signal(sem);
+            }];
+        } else {
+            [s requestFullAccessToEventsWithCompletion:^(BOOL g,NSError *e){
+                ok=g; err=e; dispatch_semaphore_signal(sem);
+            }];
+        }
     } else {
-        [s requestAccessToEntityType:t completion:^(BOOL g,NSError *e){ok=g;err=e;dispatch_semaphore_signal(sem);}];
+        EKEntityType entityType = reminders ? EKEntityTypeReminder : EKEntityTypeEvent;
+        [s requestAccessToEntityType:entityType completion:^(BOOL g,NSError *e){
+            ok=g; err=e; dispatch_semaphore_signal(sem);
+        }];
     }
     if(!ishx_wait(sem,10)||!ok){ishx_json(out,cap,NO,err.localizedDescription ?: @"calendar/reminders permission denied");return 1;}
-    NSArray *cal=[s calendarsForEntityType:(reminders?EKEntityTypeReminder:EKEntityTypeEvent)];NSMutableArray *a=[NSMutableArray array];
+    NSArray *cal=[s calendarsForEntityType:(reminders?EKEntityTypeReminder:EKEntityTypeEvent)];
+    NSMutableArray *a=[NSMutableArray array];
     for(EKCalendar *c in cal)[a addObject:@{@"title":c.title ?: @"",@"type":@(c.type)}];
-    NSData *d=[NSJSONSerialization dataWithJSONObject:a options:0 error:nil];ishx_json(out,cap,YES,[[NSString alloc]initWithData:d encoding:NSUTF8StringEncoding] ?: @"[]");return 0;
+    NSData *d=[NSJSONSerialization dataWithJSONObject:a options:0 error:nil];
+    ishx_json(out,cap,YES,[[NSString alloc]initWithData:d encoding:NSUTF8StringEncoding] ?: @"[]");return 0;
 }
 static int ishx_bluetooth(char *out,size_t cap) {
     ISHXBluetoothDelegate *d=[ISHXBluetoothDelegate new];d.sem=dispatch_semaphore_create(0);d.devices=[NSMutableArray array];
@@ -183,7 +198,7 @@ static int ishx_microphone(int argc,char *const argv[],char *out,size_t cap) {
 }
 static int ishx_photos(int argc,char *const argv[],char *out,size_t cap) {
     if(argc<4){ishx_json(out,cap,NO,@"usage: iosctl photos save guest-path");return 2;}
-    PHAuthorizationStatus st=[PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelAddOnly];
+    __block PHAuthorizationStatus st=[PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelAddOnly];
     if(st==PHAuthorizationStatusNotDetermined){dispatch_semaphore_t s=dispatch_semaphore_create(0);[PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus x){st=x;dispatch_semaphore_signal(s);}];ishx_wait(s,10);}
     if(st!=PHAuthorizationStatusAuthorized&&st!=PHAuthorizationStatusLimited){ishx_json(out,cap,NO,@"photos permission denied");return 1;}
     dispatch_semaphore_t rs=dispatch_semaphore_create(0);__block NSURL *url;__block NSError *err;
