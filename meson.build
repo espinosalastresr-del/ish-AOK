@@ -201,6 +201,9 @@ endif
 # amd64_jit_* helpers from emu/amd64_interp.c) — for those two the option is
 # a functional gate, not yet a size optimization.
 guest_archs = get_option('guest_archs')
+if guest_archs.contains('arm64')
+    summary({'iSH-X guest': 'ARM64/aarch64 enabled'}, section: 'iSH-X')
+endif
 if guest_archs.length() == 0
     error('guest_archs must enable at least one guest architecture (i386, amd64, arm64, riscv64)')
 endif
@@ -586,6 +589,7 @@ src = [
     'kernel/fork.c',
     'kernel/exec.c',
     'kernel/native.c',
+    'kernel/iosctl_glue.c',
     'kernel/native_bench.c',
     'kernel/native_io.c',
     'kernel/native_libc.c',
