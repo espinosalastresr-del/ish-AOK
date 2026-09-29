@@ -65,6 +65,20 @@
 		<string>_ssh._tcp</string>
 		<string>_http._tcp</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Programs running in iSH-X may use the camera when iosctl requests a photo.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Programs running in iSH-X may record audio when iosctl requests it.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Programs running in iSH-X may scan Bluetooth devices when iosctl requests it.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Programs running in iSH-X may access contacts when iosctl requests them.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Programs running in iSH-X may access calendars when iosctl requests them.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Programs running in iSH-X may access reminders when iosctl requests them.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Programs running in iSH-X may save guest files to Photos when iosctl requests it.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>This is required for connecting to localhost and using the ping command.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
