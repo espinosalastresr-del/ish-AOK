@@ -59,7 +59,7 @@ jobs:
       - name: Install Rust iOS target
         run: |
           rustup target add aarch64-apple-ios
-          rustup target list --installed | grep -qx 'aarch64-apple-ios (installed)'
+          rustup target list --installed | grep -qx 'aarch64-apple-ios'
       - name: Configure dash
         run: cd deps/dash && ../../tools/configure-dash.sh --quiet
       - name: Build ARM64 app
