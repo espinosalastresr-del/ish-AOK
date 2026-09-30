@@ -40,6 +40,8 @@ jobs:
           test -f kernel/iosctl_glue.c
       - name: Verify iosctl bridge contract
         run: python3 tests/unit/iosctl_contract.py
+      - name: Verify ARM64 rootfs contract
+        run: python3 tests/unit/rootfs_arm64_contract.py
   ios-native:
     runs-on: macos-15
     timeout-minutes: 60
