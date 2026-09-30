@@ -13,6 +13,6 @@ The existing iSH-AOK root catalogue infrastructure is retained because it alread
 
 iSH-X adds one product constraint: only guestABI=arm64 entries are exposed.
 
-The current rootfs catalogue contains an external ARM64 Alpine 3.24.x option and other ARM64 options. The archive is downloaded only after selection.
+The current rootfs catalogue contains an external ARM64 Alpine 3.24.x option and other ARM64 options. The archive is downloaded only after selection. Manual archive imports are also checked before they become selectable: if root metadata declares an ABI it must be `arm64`, and the installed root must contain an ARM64 ELF executable in the standard shell/init locations. Non-ARM64 roots are removed after validation rather than left installed as unusable entries.
 
 This separation keeps the IPA small and lets the rootfs evolve independently of the application binary.
