@@ -67,4 +67,10 @@ for key in (
 
 assert "response too large" in bridge
 assert "Never truncate a JSON response" in bridge
+assert "guest path must be absolute" in bridge
+assert "seconds must be a number from 1 to 300" in bridge
+assert "strtod(argv[4]" in bridge
+assert 'isEqualToString:@"clipboard"]&&' in bridge
+assert "argc!=4" in bridge
+assert "argc!=5" in bridge
 print("iosctl contract: PASS")
