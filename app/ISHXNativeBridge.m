@@ -12,6 +12,8 @@
 #include <dispatch/dispatch.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
+#include <math.h>
 
 static void ishx_json(char *out, size_t cap, BOOL ok, NSString *payload) {
     if (out == NULL || cap < 3) return;
@@ -88,6 +90,19 @@ static void ishx_main_sync(void (^block)(void)) {
     [self.devices addObject:@{@"name":p.name ?: @"",@"id":p.identifier.UUIDString,@"rssi":rssi ?: @0}];
 }
 @end
+
+static NSString *ishx_guest_path(int argc, char *const argv[], int index, char *out, size_t cap) {
+    if (index >= argc || argv[index] == NULL || argv[index][0] != '/') {
+        ishx_json(out, cap, NO, @"guest path must be absolute");
+        return nil;
+    }
+    NSString *path = [NSString stringWithUTF8String:argv[index]];
+    if (path.length == 0 || [path hasPrefix:@"/AOK/host/"] || [path containsString:@"//"]) {
+        ishx_json(out, cap, NO, @"invalid guest path");
+        return nil;
+    }
+    return path;
+}
 
 static NSString *ishx_join(int argc,char *const argv[],int first) {
     NSMutableArray *a=[NSMutableArray array];
@@ -185,11 +200,13 @@ static int ishx_bluetooth(char *out,size_t cap) {
     ishx_json(out,cap,YES,[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding] ?: @"[]");return 0;
 }
 static int ishx_camera(int argc,char *const argv[],char *out,size_t cap) {
-    if(argc<4){ishx_json(out,cap,NO,@"usage: iosctl camera photo guest-path");return 2;}
+    if(argc!=4){ishx_json(out,cap,NO,@"usage: iosctl camera photo guest-path");return 2;}
     if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]==AVAuthorizationStatusNotDetermined){
         dispatch_semaphore_t s=dispatch_semaphore_create(0);[AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL g){dispatch_semaphore_signal(s);}];ishx_wait(s,10);
     }
     if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]!=AVAuthorizationStatusAuthorized){ishx_json(out,cap,NO,@"camera permission denied");return 1;}
+    NSString *guestPath = ishx_guest_path(argc, argv, 3, out, cap);
+    if (!guestPath) return 2;
     AVCaptureDevice *dev=[AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];NSError *e=nil;AVCaptureDeviceInput *in=[AVCaptureDeviceInput deviceInputWithDevice:dev error:&e];
     AVCapturePhotoOutput *photo=[AVCapturePhotoOutput new];AVCaptureSession *session=[AVCaptureSession new];
     if(!in||![session canAddInput:in]||![session canAddOutput:photo]){ishx_json(out,cap,NO,e.localizedDescription ?: @"camera setup failed");return 1;}
@@ -197,17 +214,25 @@ static int ishx_camera(int argc,char *const argv[],char *out,size_t cap) {
     [photo capturePhotoWithSettings:[AVCapturePhotoSettings photoSettings] delegate:del];BOOL got=ishx_wait(del.sem,20);[session stopRunning];
     if(!got||!del.data){ishx_json(out,cap,NO,del.error.localizedDescription ?: @"photo capture timeout");return 1;}
     dispatch_semaphore_t ws=dispatch_semaphore_create(0);__block NSError *we;
-    [[ISHGuestFileBridge sharedBridge]writeData:del.data toGuestPath:[NSString stringWithUTF8String:argv[3]] completion:^(BOOL ok,NSError *x){we=x;dispatch_semaphore_signal(ws);}];
+    [[ISHGuestFileBridge sharedBridge]writeData:del.data toGuestPath:guestPath completion:^(BOOL ok,NSError *x){we=x;dispatch_semaphore_signal(ws);}];
     if(!ishx_wait(ws,30)||we){ishx_json(out,cap,NO,we.localizedDescription ?: @"guest write failed");return 1;}ishx_json(out,cap,YES,@"photo saved");return 0;
 }
 static int ishx_microphone(int argc,char *const argv[],char *out,size_t cap) {
-    if(argc<5){ishx_json(out,cap,NO,@"usage: iosctl microphone record guest-path seconds");return 2;}
-    double seconds=atof(argv[4]);if(seconds<1)seconds=1;if(seconds>300)seconds=300;
+    if(argc!=5){ishx_json(out,cap,NO,@"usage: iosctl microphone record guest-path seconds");return 2;}
+    char *end = NULL;
+    errno = 0;
+    double seconds = strtod(argv[4], &end);
+    if (errno != 0 || end == argv[4] || *end != '\\0' || !isfinite(seconds) || seconds < 1 || seconds > 300) {
+        ishx_json(out, cap, NO, @"seconds must be a number from 1 to 300");
+        return 2;
+    }
     AVAudioSession *as=AVAudioSession.sharedInstance;[as setCategory:AVAudioSessionCategoryRecord error:nil];[as setActive:YES error:nil];
     if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio]==AVAuthorizationStatusNotDetermined){
         dispatch_semaphore_t s=dispatch_semaphore_create(0);[AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL g){dispatch_semaphore_signal(s);}];ishx_wait(s,10);
     }
     if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio]!=AVAuthorizationStatusAuthorized){ishx_json(out,cap,NO,@"microphone permission denied");return 1;}
+    NSString *guestPath = ishx_guest_path(argc, argv, 3, out, cap);
+    if (!guestPath) return 2;
     NSURL *tmp=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString]];
     AVAudioRecorder *r=[[AVAudioRecorder alloc]initWithURL:tmp settings:@{AVFormatIDKey:@(kAudioFormatMPEG4AAC),AVSampleRateKey:@44100,AVNumberOfChannelsKey:@1} error:nil];
     if(!r||![r record]){ishx_json(out,cap,NO,@"microphone setup failed");return 1;}[NSThread sleepForTimeInterval:seconds];[r stop];
@@ -217,12 +242,14 @@ static int ishx_microphone(int argc,char *const argv[],char *out,size_t cap) {
     if(!ishx_wait(ws,30)||we){ishx_json(out,cap,NO,we.localizedDescription ?: @"guest write failed");return 1;}ishx_json(out,cap,YES,@"recording saved");return 0;
 }
 static int ishx_photos(int argc,char *const argv[],char *out,size_t cap) {
-    if(argc<4){ishx_json(out,cap,NO,@"usage: iosctl photos save guest-path");return 2;}
+    if(argc!=4){ishx_json(out,cap,NO,@"usage: iosctl photos save guest-path");return 2;}
     __block PHAuthorizationStatus st=[PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelAddOnly];
     if(st==PHAuthorizationStatusNotDetermined){dispatch_semaphore_t s=dispatch_semaphore_create(0);[PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus x){st=x;dispatch_semaphore_signal(s);}];ishx_wait(s,10);}
     if(st!=PHAuthorizationStatusAuthorized&&st!=PHAuthorizationStatusLimited){ishx_json(out,cap,NO,@"photos permission denied");return 1;}
+    NSString *guestPath = ishx_guest_path(argc, argv, 3, out, cap);
+    if (!guestPath) return 2;
     dispatch_semaphore_t rs=dispatch_semaphore_create(0);__block NSURL *url;__block NSError *err;
-    [[ISHGuestFileBridge sharedBridge]extractToTempFileAtGuestPath:[NSString stringWithUTF8String:argv[3]] progress:nil completion:^(NSURL *u,NSError *e){url=u;err=e;dispatch_semaphore_signal(rs);}];
+    [[ISHGuestFileBridge sharedBridge]extractToTempFileAtGuestPath:guestPath progress:nil completion:^(NSURL *u,NSError *e){url=u;err=e;dispatch_semaphore_signal(rs);}];
     if(!ishx_wait(rs,60)||err||!url){ishx_json(out,cap,NO,err.localizedDescription ?: @"guest extraction failed");return 1;}
     dispatch_semaphore_t ps=dispatch_semaphore_create(0);__block BOOL ok=NO;
     [[PHPhotoLibrary sharedPhotoLibrary]performChanges:^{PHAssetChangeRequest *c=[PHAssetChangeRequest creationRequestForAssetFromImage:[UIImage imageWithContentsOfFile:url.path]];ok=(c!=nil);} completionHandler:^(BOOL x,NSError *e){ok=x;err=e;dispatch_semaphore_signal(ps);}];
@@ -234,7 +261,7 @@ int ishx_native_bridge_run(int argc,char *const argv[],char *out,size_t cap) {
     if([c isEqualToString:@"status"]){ishx_json(out,cap,YES,@"{\"nativeBridge\":true,\"jitFallback\":\"gadget\",\"stikDebug\":\"optional\"}");return 0;}
     if([c isEqualToString:@"location"]&&argc>2&&strcmp(argv[2],"get")==0)return ishx_location(out,cap);
     if([c isEqualToString:@"motion"]&&argc>2&&strcmp(argv[2],"accelerometer")==0)return ishx_motion(out,cap);
-    if([c isEqualToString:@"clipboard"])return ishx_clipboard(argc,argv,out,cap);
+    if([c isEqualToString:@"clipboard"]&&((argc==2)|| (argc>=3&&strcmp(argv[2],"get")==0&&argc==3) || (argc>=3&&strcmp(argv[2],"set")==0&&argc>=4)))return ishx_clipboard(argc,argv,out,cap);
     if([c isEqualToString:@"battery"]&&argc>2&&strcmp(argv[2],"get")==0)return ishx_battery(out,cap);
     if([c isEqualToString:@"notifications"]&&argc>2&&strcmp(argv[2],"status")==0)return ishx_notifications(out,cap);
     if([c isEqualToString:@"contacts"]&&argc>2&&strcmp(argv[2],"list")==0)return ishx_contacts(out,cap);
