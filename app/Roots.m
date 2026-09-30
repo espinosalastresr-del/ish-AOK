@@ -1875,24 +1875,39 @@ static NSDictionary<NSString *, NSString *> *ParseRootsCommand(NSString *text, N
 // ordinary: the stock "default" root has no ABI metadata either and boots fine.
 // Requiring it failed every path and URL install, after the import had already
 // succeeded.
+static BOOL IsArm64ELFAtPath(NSString *path) {
+    NSData *header = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:NULL];
+    if (header.length < 20)
+        return NO;
+    const unsigned char *b = header.bytes;
+    // ELF64, little-endian, EM_AARCH64 (183). This is deliberately checked
+    // from bytes instead of using the host's <elf.h>: the app itself is ARM64,
+    // but the contract is about the guest executable's ELF header.
+    return b[0] == 0x7f && b[1] == 'E' && b[2] == 'L' && b[3] == 'F' &&
+           b[4] == 2 && b[5] == 1 && b[18] == 0xb7 && b[19] == 0x00;
+}
+
 static NSString *ValidateInstalledRoot(NSString *name, NSString **abiOut) {
     Roots *roots = Roots.instance;
     if (![roots.roots containsObject:name])
         return @"the import reported success but the root is not in the list";
     NSString *abi = [roots guestABIForRootNamed:name];
+    if (abi.length != 0 && ![abi isEqualToString:@"arm64"])
+        return @"the imported root declares a non-ARM64 guest ABI";
     NSURL *data = [[roots rootUrl:name] URLByAppendingPathComponent:@"data"];
     NSFileManager *fm = NSFileManager.defaultManager;
     BOOL executable = NO;
     for (NSString *probe in @[@"bin/sh", @"bin/busybox", @"sbin/init", @"usr/bin/sh"]) {
-        if ([fm fileExistsAtPath:[data URLByAppendingPathComponent:probe].path]) {
+        NSString *path = [data URLByAppendingPathComponent:probe].path;
+        if ([fm fileExistsAtPath:path] && IsArm64ELFAtPath(path)) {
             executable = YES;
             break;
         }
     }
     if (!executable)
-        return @"the new root has no /bin/sh, /bin/busybox or /sbin/init; it is probably not a root filesystem";
+        return @"the new root has no ARM64 ELF executable at /bin/sh, /bin/busybox, /sbin/init or /usr/bin/sh";
     if (abiOut != NULL)
-        *abiOut = abi.length ? abi : @"ABI not recorded";
+        *abiOut = abi.length ? abi : @"ABI detected from ELF";
     return nil;
 }
 
