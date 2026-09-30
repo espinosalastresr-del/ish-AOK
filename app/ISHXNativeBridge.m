@@ -238,7 +238,7 @@ static int ishx_microphone(int argc,char *const argv[],char *out,size_t cap) {
     if(!r||![r record]){ishx_json(out,cap,NO,@"microphone setup failed");return 1;}[NSThread sleepForTimeInterval:seconds];[r stop];
     NSData *data=[NSData dataWithContentsOfURL:tmp];[[NSFileManager defaultManager]removeItemAtURL:tmp error:nil];if(!data){ishx_json(out,cap,NO,@"recording failed");return 1;}
     dispatch_semaphore_t ws=dispatch_semaphore_create(0);__block NSError *we;
-    [[ISHGuestFileBridge sharedBridge]writeData:data toGuestPath:[NSString stringWithUTF8String:argv[3]] completion:^(BOOL ok,NSError *x){we=x;dispatch_semaphore_signal(ws);}];
+    [[ISHGuestFileBridge sharedBridge]writeData:data toGuestPath:guestPath completion:^(BOOL ok,NSError *x){we=x;dispatch_semaphore_signal(ws);}];
     if(!ishx_wait(ws,30)||we){ishx_json(out,cap,NO,we.localizedDescription ?: @"guest write failed");return 1;}ishx_json(out,cap,YES,@"recording saved");return 0;
 }
 static int ishx_photos(int argc,char *const argv[],char *out,size_t cap) {
@@ -258,18 +258,18 @@ static int ishx_photos(int argc,char *const argv[],char *out,size_t cap) {
 int ishx_native_bridge_run(int argc,char *const argv[],char *out,size_t cap) {
     if(argc<2){ishx_json(out,cap,NO,@"usage: iosctl command");return 2;}
     NSString *c=[NSString stringWithUTF8String:argv[1]] ?: @"";
-    if([c isEqualToString:@"status"]){ishx_json(out,cap,YES,@"{\"nativeBridge\":true,\"jitFallback\":\"gadget\",\"stikDebug\":\"optional\"}");return 0;}
-    if([c isEqualToString:@"location"]&&argc>2&&strcmp(argv[2],"get")==0)return ishx_location(out,cap);
-    if([c isEqualToString:@"motion"]&&argc>2&&strcmp(argv[2],"accelerometer")==0)return ishx_motion(out,cap);
-    if([c isEqualToString:@"clipboard"]&&((argc==2)|| (argc>=3&&strcmp(argv[2],"get")==0&&argc==3) || (argc>=3&&strcmp(argv[2],"set")==0&&argc>=4)))return ishx_clipboard(argc,argv,out,cap);
-    if([c isEqualToString:@"battery"]&&argc>2&&strcmp(argv[2],"get")==0)return ishx_battery(out,cap);
-    if([c isEqualToString:@"notifications"]&&argc>2&&strcmp(argv[2],"status")==0)return ishx_notifications(out,cap);
-    if([c isEqualToString:@"contacts"]&&argc>2&&strcmp(argv[2],"list")==0)return ishx_contacts(out,cap);
-    if([c isEqualToString:@"calendar"]&&argc>2&&strcmp(argv[2],"list")==0)return ishx_eventkit(out,cap,NO);
-    if([c isEqualToString:@"reminders"]&&argc>2&&strcmp(argv[2],"list")==0)return ishx_eventkit(out,cap,YES);
-    if([c isEqualToString:@"bluetooth"]&&argc>2&&strcmp(argv[2],"scan")==0)return ishx_bluetooth(out,cap);
-    if([c isEqualToString:@"camera"]&&argc>2&&strcmp(argv[2],"photo")==0)return ishx_camera(argc,argv,out,cap);
-    if([c isEqualToString:@"microphone"]&&argc>2&&strcmp(argv[2],"record")==0)return ishx_microphone(argc,argv,out,cap);
-    if([c isEqualToString:@"photos"]&&argc>2&&strcmp(argv[2],"save")==0)return ishx_photos(argc,argv,out,cap);
+    if([c isEqualToString:@"status"]&&argc==2){ishx_json(out,cap,YES,@"{\"nativeBridge\":true,\"jitFallback\":\"gadget\",\"stikDebug\":\"optional\"}");return 0;}
+    if([c isEqualToString:@"location"]&&argc==3&&strcmp(argv[2],"get")==0)return ishx_location(out,cap);
+    if([c isEqualToString:@"motion"]&&argc==3&&strcmp(argv[2],"accelerometer")==0)return ishx_motion(out,cap);
+    if([c isEqualToString:@"clipboard"]&&((argc==3&&strcmp(argv[2],"get")==0)||(argc>=4&&strcmp(argv[2],"set")==0)))return ishx_clipboard(argc,argv,out,cap);
+    if([c isEqualToString:@"battery"]&&argc==3&&strcmp(argv[2],"get")==0)return ishx_battery(out,cap);
+    if([c isEqualToString:@"notifications"]&&argc==3&&strcmp(argv[2],"status")==0)return ishx_notifications(out,cap);
+    if([c isEqualToString:@"contacts"]&&argc==3&&strcmp(argv[2],"list")==0)return ishx_contacts(out,cap);
+    if([c isEqualToString:@"calendar"]&&argc==3&&strcmp(argv[2],"list")==0)return ishx_eventkit(out,cap,NO);
+    if([c isEqualToString:@"reminders"]&&argc==3&&strcmp(argv[2],"list")==0)return ishx_eventkit(out,cap,YES);
+    if([c isEqualToString:@"bluetooth"]&&argc==3&&strcmp(argv[2],"scan")==0)return ishx_bluetooth(out,cap);
+    if([c isEqualToString:@"camera"]&&argc==4&&strcmp(argv[2],"photo")==0)return ishx_camera(argc,argv,out,cap);
+    if([c isEqualToString:@"microphone"]&&argc==5&&strcmp(argv[2],"record")==0)return ishx_microphone(argc,argv,out,cap);
+    if([c isEqualToString:@"photos"]&&argc==4&&strcmp(argv[2],"save")==0)return ishx_photos(argc,argv,out,cap);
     ishx_json(out,cap,NO,@"unsupported iosctl command");return 127;
 }
