@@ -73,4 +73,17 @@ assert "strtod(argv[4]" in bridge
 assert 'isEqualToString:@"clipboard"]&&' in bridge
 assert "argc!=4" in bridge
 assert "argc!=5" in bridge
+assert 'isEqualToString:@"status"]&&argc==2' in bridge
+assert 'isEqualToString:@"location"]&&argc==3' in bridge
+assert 'isEqualToString:@"motion"]&&argc==3' in bridge
+assert 'isEqualToString:@"battery"]&&argc==3' in bridge
+assert 'isEqualToString:@"notifications"]&&argc==3' in bridge
+assert 'isEqualToString:@"contacts"]&&argc==3' in bridge
+assert 'isEqualToString:@"calendar"]&&argc==3' in bridge
+assert 'isEqualToString:@"reminders"]&&argc==3' in bridge
+assert 'isEqualToString:@"bluetooth"]&&argc==3' in bridge
+assert 'isEqualToString:@"camera"]&&argc==4' in bridge
+assert 'isEqualToString:@"microphone"]&&argc==5' in bridge
+assert 'isEqualToString:@"photos"]&&argc==4' in bridge
+assert 'toGuestPath:guestPath' in bridge
 print("iosctl contract: PASS")
