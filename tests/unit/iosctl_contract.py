@@ -8,21 +8,20 @@ glue = Path("kernel/iosctl_glue.c").read_text(encoding="utf-8")
 plist = Path("app/Info.plist").read_text(encoding="utf-8")
 
 commands = {
-    "status": r'isEqualToString:@"status"',
-    "location": r'isEqualToString:@"location"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
-    "motion": r'isEqualToString:@"motion"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"accelerometer"\)\s*==\s*0',
-    "clipboard": r'isEqualToString:@"clipboard"',
-    "battery": r'isEqualToString:@"battery"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
-    "notifications": r'isEqualToString:@"notifications"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"status"\)\s*==\s*0',
-    "contacts": r'isEqualToString:@"contacts"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
-    "calendar": r'isEqualToString:@"calendar"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
-    "reminders": r'isEqualToString:@"reminders"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
-    "bluetooth": r'isEqualToString:@"bluetooth"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"scan"\)\s*==\s*0',
-    "camera": r'isEqualToString:@"camera"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"photo"\)\s*==\s*0',
-    "microphone": r'isEqualToString:@"microphone"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"record"\)\s*==\s*0',
-    "photos": r'isEqualToString:@"photos"\]\s*&&\s*argc\s*>\s*2\s*&&\s*strcmp\(argv\[2\],\s*"save"\)\s*==\s*0',
+    "status": r'isEqualToString:@"status"\]\s*&&\s*argc\s*==\s*2',
+    "location": r'isEqualToString:@"location"\]\s*&&\s*argc\s*==\s*3\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
+    "motion": r'isEqualToString:@"motion"\]\s*&&\s*argc\s*==\s*3\s*&&\s*strcmp\(argv\[2\],\s*"accelerometer"\)\s*==\s*0',
+    "clipboard": r'isEqualToString:@"clipboard"\]\s*&&',
+    "battery": r'isEqualToString:@"battery"\]\s*&&\s*argc\s*==\s*3\s*&&\s*strcmp\(argv\[2\],\s*"get"\)\s*==\s*0',
+    "notifications": r'isEqualToString:@"notifications"\]\s*&&\s*argc\s*==\s*3\s*&&\s*strcmp\(argv\[2\],\s*"status"\)\s*==\s*0',
+    "contacts": r'isEqualToString:@"contacts"\]\s*&&\s*argc\s*==\s*3\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "calendar": r'isEqualToString:@"calendar"\]\s*&&\s*argc\s*==\s*3\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "reminders": r'isEqualToString:@"reminders"\]\s*&&\s*argc\s*==\s*3\s*&&\s*strcmp\(argv\[2\],\s*"list"\)\s*==\s*0',
+    "bluetooth": r'isEqualToString:@"bluetooth"\]\s*&&\s*argc\s*==\s*3\s*&&\s*strcmp\(argv\[2\],\s*"scan"\)\s*==\s*0',
+    "camera": r'isEqualToString:@"camera"\]\s*&&\s*argc\s*==\s*4\s*&&\s*strcmp\(argv\[2\],\s*"photo"\)\s*==\s*0',
+    "microphone": r'isEqualToString:@"microphone"\]\s*&&\s*argc\s*==\s*5\s*&&\s*strcmp\(argv\[2\],\s*"record"\)\s*==\s*0',
+    "photos": r'isEqualToString:@"photos"\]\s*&&\s*argc\s*==\s*4\s*&&\s*strcmp\(argv\[2\],\s*"save"\)\s*==\s*0',
 }
-
 for name, pattern in commands.items():
     assert re.search(pattern, bridge), f"missing iosctl bridge contract: {name}"
 
