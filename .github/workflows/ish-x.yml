@@ -44,6 +44,45 @@ jobs:
         run: python3 tests/unit/rootfs_arm64_contract.py
       - name: Verify JIT coordinator contract
         run: python3 tests/unit/jit_coordinator_contract.py
+  arm64-gadget-jit:
+    # Native AArch64 is required because jit/guest-arm64/*.S is host-executed
+    # gadget code, not portable guest bytecode.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install ARM64 build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld libarchive-dev libsqlite3-dev
+          pip3 install meson ninja
+      - name: Configure dash
+        run: cd deps/dash && ../../tools/configure-dash.sh --quiet
+      - name: Configure native ARM64 gadget JIT
+        run: |
+          meson setup build-ishx-arm64-jit \
+            -Dengine=jit \
+            -Dguest_archs=arm64 \
+            -Djit_cpu_family=aarch64 \
+            -Dnative_bash=disabled \
+            -Dnative_helix=disabled
+      - name: Build native ARM64 CLI
+        run: ninja -C build-ishx-arm64-jit ish
+      - name: Verify native ARM64 gadget wiring
+        run: |
+          grep -q "ISH_JIT_ARM64_GUEST=1" build-ishx-arm64-jit/meson-private/cdata.txt
+          test -f jit/guest-arm64/math.S
+          test -f jit/guest-arm64/control.S
+          test -f jit/guest-arm64/memory.S
+          test -x build-ishx-arm64-jit/ish
+          file build-ishx-arm64-jit/ish | grep -qi 'aarch64'
+      - name: Run interpreter vs gadget JIT differential
+        run: bash tests/arm64/jit_regression.sh
   ios-native:
     runs-on: macos-15
     timeout-minutes: 60
