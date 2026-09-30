@@ -1876,7 +1876,11 @@ static NSDictionary<NSString *, NSString *> *ParseRootsCommand(NSString *text, N
 // Requiring it failed every path and URL install, after the import had already
 // succeeded.
 static BOOL IsArm64ELFAtPath(NSString *path) {
-    NSData *header = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:NULL];
+    NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:path];
+    if (file == nil)
+        return NO;
+    NSData *header = [file readDataOfLength:20];
+    [file closeFile];
     if (header.length < 20)
         return NO;
     const unsigned char *b = header.bytes;
