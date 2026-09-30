@@ -10,6 +10,7 @@ manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 assert "iSH-X never embeds a root filesystem in the IPA" in roots
 assert 'isEqualToString:@"arm64"' in roots
 assert "IsArm64ELFAtPath" in roots
+assert "readDataOfLength:20" in roots
 assert "b[4] == 2" in roots
 assert "b[18] == 0xb7" in roots
 assert "the imported root declares a non-ARM64 guest ABI" in roots
